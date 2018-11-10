@@ -1,7 +1,7 @@
 from PIL import Image, ImageFilter
 
-FILE_NAME = 'whale.jpg'
-PX = 132
+FILE_NAME = 'tiger2.jpg'
+PX = 90
 
 # rgb
 BLUE = (37, 37, 221)
@@ -24,7 +24,7 @@ BOUNDS = { # grayscale
 
 def viewing_size(xy, max_d):
     factor = max_d // max(xy)
-    return ([10 * d for d in xy])
+    return ([factor * d for d in xy])
 
 def pixellated(img):
     copy = img.copy()
@@ -63,5 +63,5 @@ def filtered(img):
 im = Image.open(FILE_NAME)
 small = filtered(pixellated(im))
 print(small.size)
-big = small.copy().resize(viewing_size(small.size, 1000))
-big.show()
+DISPLAY = small.copy().resize(viewing_size(small.size, 1000))
+#DISPLAY.show()
