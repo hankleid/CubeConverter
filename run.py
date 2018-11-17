@@ -55,18 +55,18 @@ class StartPage(tk.Frame):
         self.grid(row=0, column=0, sticky="nsew")
         self.lbl_upload = tk.Label(self, text="Image:", font=("Fixedsys", 25))
         self.lbl_currentfile = tk.Label(self, text="choose file to convert",
-                            font=("Arial Italic", 10), fg="red")
+                            font=("Arial Italic", 12), fg="red")
         # BUTTONS
-        self.btn_upload = tk.Button(self, width=15, text="Upload",
-                        font = ("Fixedsys", 15), bg="white", command=self.upload_image)
-        self.btn_go = tk.Button(self, width=5, text="   ",
+        self.btn_upload = tk.Button(self, text="Upload",
+                        font = ("Fixedsys", 12), bg="white", command=self.upload_image)
+        self.btn_go = tk.Button(self, width=15, text="   ",
                     font=("Fixedsys", 15), state="disabled", bg="gray", command=lambda: self.go(controller))
 
         # ADD TO GRID
         self.lbl_upload.grid(column=0, row=0)
-        self.lbl_currentfile.grid(column=1, row=1)
-        self.btn_go.grid(column=2, row=0)
-        self.btn_upload.grid(column=1, row=0)
+        self.lbl_currentfile.grid(column=1, row=0)
+        self.btn_go.grid(column=1, row=1)
+        self.btn_upload.grid(column=2, row=0)
 
     def upload_image(self):
         def parse_string(str):
@@ -87,7 +87,6 @@ class StartPage(tk.Frame):
 
     def go(self, controller):
         controller.open_window(self.directory, self.windowname)
-        self.btn_go.config(text="   ", state="disabled", bg="gray")
 
 class ImageFrame(tk.Frame):
     cnvs_display = None
