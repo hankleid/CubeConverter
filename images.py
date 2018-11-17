@@ -22,46 +22,53 @@ BOUNDS = { # grayscale
     6: [(0, 35), (36, 49), (50, 99), (100, 139), (140, 169), (170, 255)]
 }
 
-def viewing_size(xy, max_d):
-    factor = max_d // max(xy)
-    return ([factor * d for d in xy])
+class CubedImage():
+    og = None
+    final = None
+    dimensions = (0, 0)
 
-def pixellated(img):
-    copy = img.copy()
-    copy.thumbnail((PX, PX))
+    def __init__(self, dir, colors, max):
+        global COLORS, PX, FILE_NAME
+        COLORS, PX, FILE_NAME = colors, max, dir
 
-    def nearest(n):
-        return n - n % 3
+        self.og = Image.open(FILE_NAME)
+        small = self.filter(self.pixellate())
+        self.dimensions = small.size
+        self.final = small.copy().resize(self.viewing_size(small.size, 1000))
 
-    x, y = copy.size[0], copy.size[1]
-    rect = (0, 0, nearest(x), nearest(y))
-    return copy.crop(rect)
+    def pixellate(self):
+        copy = self.og.copy()
+        copy.thumbnail((PX, PX))
 
-def gen_masks(img):
-    img = img.convert("L")
-    source = img.split()
-    masks = []
+        def nearest(n):
+            return n - n % 3
 
-    def add_section(lower, higher):
-        masks.append(source[0].point(lambda i: (i >= lower and i <= higher) and 255))
+        x, y = copy.size[0], copy.size[1]
+        rect = (0, 0, nearest(x), nearest(y))
+        return copy.crop(rect)
 
-    for a, b in BOUNDS[len(COLORS)]:
-        add_section(a, b)
-    return masks
+    def filter(self, img):
+        source = img.split()
+        masks = self.gen_masks(img)
 
-def filtered(img):
-    source = img.split()
-    masks = gen_masks(img)
+        for color in range(len(COLORS)):
+            for rgb in range(3):
+                c = source[rgb].point(lambda i: COLORS[color][rgb])
+                source[rgb].paste(c, None, masks[color])
+        return Image.merge(img.mode, source)
 
-    for color in range(len(COLORS)):
-        for rgb in range(3):
-            c = source[rgb].point(lambda i: COLORS[color][rgb])
-            source[rgb].paste(c, None, masks[color])
-    img = Image.merge(img.mode, source)
-    return img
+    def gen_masks(self, img):
+        img = img.convert("L")
+        source = img.split()
+        masks = []
 
-im = Image.open(FILE_NAME)
-small = filtered(pixellated(im))
-print(small.size)
-DISPLAY = small.copy().resize(viewing_size(small.size, 1000))
-#DISPLAY.show()
+        def add_section(lower, higher):
+            masks.append(source[0].point(lambda i: (i >= lower and i <= higher) and 255))
+
+        for a, b in BOUNDS[len(COLORS)]:
+            add_section(a, b)
+        return masks
+
+    def viewing_size(self, xy, max_d):
+        factor = max_d // max(xy)
+        return ([factor * d for d in xy])
