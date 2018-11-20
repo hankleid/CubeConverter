@@ -1,6 +1,6 @@
 from PIL import Image, ImageFilter
 
-FILE_NAME = 'tiger2.jpg'
+FILE_NAME = ''
 PX = 90
 
 # rgb

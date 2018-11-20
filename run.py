@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter.filedialog import askopenfilename
 import images as im
 from PIL import Image, ImageTk
@@ -44,8 +45,10 @@ class SubCube(tk.Toplevel):
         InfoFrame(container, self).tkraise()
 
     def apply_changes(self):
-        self.colors = [color for check, color in self.info.checks.items() if check.var.get()]
+        self.info.update_colors(self)
         self.image.refresh_img(self)
+        # note: info's "update_size" is called instantaneously when user
+        #       interacts with the dropdown menu, hence not called here
 
 
 class StartPage(tk.Frame):
@@ -125,6 +128,11 @@ class InfoFrame(tk.Frame):
 
         self.btn_refresh = tk.Button(self, width=15, text="Apply Changes",
                         font = ("Fixedsys", 15), bg="white", fg="light blue", command=controller.apply_changes)
+        self.cb_sizes = ttk.Combobox(self, state='readonly', width=5, values=("15", "30", "45", "60", "90", "120", "150"))
+        self.cb_sizes.set("90")
+        self.cb_sizes.bind('<<ComboboxSelected>>', lambda event: self.update_size(event, controller))
+
+        self.cb_sizes.pack(anchor='w')
         self.btn_refresh.pack()
 
     def gen_checks(self, colors):
@@ -135,7 +143,13 @@ class InfoFrame(tk.Frame):
             check.var = var
             self.checks[check] = c
             check.select()
-            check.pack(anchor="w")
+            check.pack(anchor='w')
+
+    def update_size(self, event, controller):
+        if event: controller.px = int(self.cb_sizes.get())
+
+    def update_colors(self, controller):
+        controller.colors = [color for check, color in self.checks.items() if check.var.get()]
 
 
 app = CubeApp("Welcome to CubeConverter!")
