@@ -72,3 +72,6 @@ class CubedImage():
     def viewing_size(self, xy, max_d):
         factor = max_d // max(xy)
         return ([factor * d for d in xy])
+
+    def get_numcubes(self):
+        return self.dimensions[0] * self.dimensions[1]
